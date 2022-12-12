@@ -1,48 +1,55 @@
 from django.shortcuts import render
 from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveAPIView, CreateAPIView
 from rest_framework.response import Response
-from .serializers import AnimalSerializer, BagSerializer
+from .serializers import AnimalListSerializer, CreateAnimalSerializer, \
+                         CreateBagSerializer, BagListSerializer
 from .models import Animal, Bag
 from rest_framework.views import APIView
 
 # Create your views here.
 
 
-class AnimalView(APIView):
+class AnimalListView(APIView):
 
     def get(self, request):
         animals = Animal.objects.all()
-        return Response(AnimalSerializer(animals, many=True).data)
+        return Response(AnimalListSerializer(animals, many=True).data)
+
+
+class AnimalCreateView(APIView):
 
     def post(self, request):
-        serializer = AnimalSerializer(data=request.data)
+        serializer = CreateAnimalSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
 
 
-class BagView(APIView):
+class BagListView(APIView):
 
     def get(self, request):
         bags = Bag.objects.all()
-        return Response(BagSerializer(bags, many=True).data)
+        return Response(BagListSerializer(bags, many=True).data)
+
+
+class BagCreateView(APIView):
 
     def post(self, request):
-        serializer = BagSerializer(data=request.data)
+        serializer = CreateBagSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
 
-    # def post(self, request):
-    #     serializer = BagSerializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     bag = Bag(
-    #         length=request.data.get('length'),
-    #         height=request.data.get('height'),
-    #         width=request.data.get('width'),
-    #         color=request.data.get('color'),
-    #     )
-    #     bag.volume = bag.length * bag.height * bag.width
-    #     bag.save()
-    #     return Response(BagSerializer(bag).data)
+
+class AddAnimalBagView(APIView):
+
+    def post(self, request):
+        animal = Animal.objects.get(name=request.data.get('name'))
+        bag = Bag.objects.get(id=request.data.get('id'))
+        animal.bag_set.add(bag)
+        animal.bags = animal.bag_set.count()
+        animal.save()
+        serializer = AnimalListSerializer(animal)
+        return Response(serializer.data, status=201)
+
 
