@@ -24,7 +24,7 @@ class Bag(models.Model):
     width = models.DecimalField(max_digits=10, decimal_places=1, default=0)
     volume = models.DecimalField(max_digits=10, decimal_places=1, default=0)
     color = models.CharField(max_length=150)
-    owner = models.ForeignKey(Animal, on_delete=models.CASCADE, null=True)
+    owner = models.ForeignKey(Animal, on_delete=models.SET_NULL, null=True)
 
     def str(self):
         return f'volume of bag = {self.volume}'
