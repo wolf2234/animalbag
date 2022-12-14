@@ -21,8 +21,11 @@ class AnimalListView(APIView):
 class AnimalDetailView(APIView):
 
     def get(self, request, pk):
-        animals = Animal.objects.get(pk=pk)
-        return Response(AnimalDetailSerializer(animals).data)
+        try:
+            animals = Animal.objects.get(pk=pk)
+        except:
+            return Response({"error": "Animal object does not exist."}, status=404)
+        return Response(AnimalDetailSerializer(animals).data, status=200)
 
 
 class AnimalCreateView(APIView):
@@ -59,7 +62,7 @@ class BagUpdateView(APIView):
         try:
             instance = Bag.objects.get(pk=pk)
         except:
-            return Response({"error": "Object does not exists."}, status=404)
+            return Response({"error": "Bag does not exists."}, status=404)
 
         serializer = UpdateBagSerializer(data=request.data, instance=instance)
         serializer.is_valid(raise_exception=True)
@@ -78,7 +81,10 @@ class BagListView(APIView):
 class BagDetailView(APIView):
 
     def get(self, request, pk):
-        bag = Bag.objects.get(pk=pk)
+        try:
+            bag = Bag.objects.get(pk=pk)
+        except:
+            return Response({"error": "Bag object does not exist."}, status=404)
         return Response(BagDetailSerializer(bag).data)
 
 
@@ -94,8 +100,12 @@ class BagCreateView(APIView):
 class AddAnimalBagView(APIView):
 
     def post(self, request):
-        animal = Animal.objects.get(name=request.data.get('name'))
-        bag = Bag.objects.get(id=request.data.get('id'))
+        animal = Animal.objects.filter(name=request.data.get('name'))
+        bag = Bag.objects.filter(id=request.data.get('id'))
+        if not animal:
+            return Response({"error": "Animal object does not exist."}, status=404)
+        elif not bag:
+            return Response({"error": "Bag object does not exist."}, status=404)
         animal.bag_set.add(bag)
         animal.bags = animal.bag_set.count()
         animal.save()
@@ -108,14 +118,14 @@ class DeleteBagView(APIView):
     def delete(self, request, *args, **kwargs):
         pk = kwargs.get('pk', None)
         if not pk:
-            return Response({"error": "Method PUT not allowed."}, status=404)
+            return Response({"error": "Method DELETE not allowed."}, status=404)
         try:
             instance = Bag.objects.get(pk=pk)
         except:
-            return Response({"error": "Object does not exists."}, status=404)
+            return Response({"error": "Bag does not exists."}, status=404)
 
         serializer = DeleteBagSerializer().delete(instance=instance)
-        return Response({'message': f'Bag object was successfully deleted.'}, status=200)
+        return Response({'message': 'Bag object was successfully deleted.'}, status=200)
 
 
 class DeleteAnimalView(APIView):
@@ -127,7 +137,7 @@ class DeleteAnimalView(APIView):
         try:
             instance = Animal.objects.get(pk=pk)
         except:
-            return Response({"error": "Object does not exists."}, status=404)
+            return Response({"error": "Animal does not exists."}, status=404)
 
         serializer = DeleteAnimalSerializer().delete(instance=instance)
         return Response({'message': f'Animal object was successfully deleted.'}, status=200)

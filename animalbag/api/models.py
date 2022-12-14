@@ -5,8 +5,8 @@ from django.db import models
 
 class Animal(models.Model):
     name = models.CharField(max_length=150)
-    age = models.IntegerField(default=0)
-    weight = models.DecimalField(max_digits=10, decimal_places=1, default=0)
+    age = models.IntegerField()
+    weight = models.DecimalField(max_digits=10, decimal_places=1)
     color = models.CharField(max_length=150)
     bags = models.IntegerField(default=0)
 
@@ -19,9 +19,9 @@ class Animal(models.Model):
 
 
 class Bag(models.Model):
-    length = models.DecimalField(max_digits=10, decimal_places=1, default=0)
-    height = models.DecimalField(max_digits=10, decimal_places=1, default=0)
-    width = models.DecimalField(max_digits=10, decimal_places=1, default=0)
+    length = models.DecimalField(max_digits=10, decimal_places=1)
+    height = models.DecimalField(max_digits=10, decimal_places=1)
+    width = models.DecimalField(max_digits=10, decimal_places=1)
     volume = models.DecimalField(max_digits=10, decimal_places=1, default=0)
     color = models.CharField(max_length=150)
     owner = models.ForeignKey(Animal, on_delete=models.SET_NULL, null=True)
