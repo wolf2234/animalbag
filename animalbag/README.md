@@ -25,7 +25,7 @@ This is a simple test api that was written for educational purposes. It implemen
 - http://127.0.0.1:8000/api/v1/delete/bag/<int:pk>/ - delete the bag object.
 ```
 
-### How to start
+### How to start:
 
 ```
 cd animalbag
